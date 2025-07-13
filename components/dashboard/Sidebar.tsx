@@ -563,31 +563,31 @@ if (false) {
                               `} />
                               )}
                               {isExpanded && (
-                                <div className="ml-3 flex-1 flex items-center justify-between min-w-0">
-                                  <span className="text-sm font-medium truncate">
-                                    {deletingChat === chat.thread_id ? (
-                                      <span className="flex items-center text-gray-400">
-                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                        Deleting...
-                                      </span>
-                                    ) : loadingChat === chat.thread_id ? (
-                                      <span className="flex items-center text-blue-600">
-                                        <span className="ml-1">Loading messages...</span>
-                                      </span>
-                                    ) : (
-                                      chat.name
+                                                                  <div className="ml-3 flex-1 flex items-center justify-between min-w-0">
+                                    <span className="text-sm font-medium truncate pr-2">
+                                      {deletingChat === chat.thread_id ? (
+                                        <span className="flex items-center text-gray-400">
+                                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                          Deleting...
+                                        </span>
+                                      ) : loadingChat === chat.thread_id ? (
+                                        <span className="flex items-center text-blue-600">
+                                          <span className="ml-1">Loading messages...</span>
+                                        </span>
+                                      ) : (
+                                        chat.name
+                                      )}
+                                    </span>
+                                    {!deletingChat && !loadingChat && (
+                                      <button
+                                        onClick={(e) => handleDeleteClick(chat, e)}
+                                        className="p-1 rounded-md opacity-0 group-hover:opacity-100 transition-all hover:bg-gray-200 dark:hover:bg-gray-700 ml-2 flex-shrink-0"
+                                        aria-label="Delete chat"
+                                      >
+                                        <Trash2 className="h-4 w-4 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400" />
+                                      </button>
                                     )}
-                                  </span>
-                                  {!deletingChat && !loadingChat && (
-                                    <button
-                                      onClick={(e) => handleDeleteClick(chat, e)}
-                                      className="p-1 rounded-md opacity-0 group-hover:opacity-100 transition-all hover:bg-gray-200 dark:hover:bg-gray-700 ml-2 flex-shrink-0"
-                                      aria-label="Delete chat"
-                                    >
-                                      <Trash2 className="h-4 w-4 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400" />
-                                    </button>
-                                  )}
-                                </div>
+                                  </div>
                               )}
                             </div>
                           </button>
@@ -764,7 +764,7 @@ if (false) {
                                         h-5 w-5 flex-shrink-0
                                         ${currentThread === chat.thread_id ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400'}
                                       `} />
-                                      <span className="ml-3 text-sm font-medium truncate flex-1 text-left">
+                                      <span className="ml-3 text-sm font-medium truncate flex-1 text-left pr-10">
                                         {chat.name}
                                       </span>
                                     </div>
