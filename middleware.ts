@@ -1,19 +1,22 @@
 import { clerkClient, clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server';
 
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)', '/api/webhook/clerk(.*)', '/api/public-chat(.*)'])
+const isPublicRoute = createRouteMatcher([
+  '/', 
+  '/sign-in(.*)', 
+  '/sign-up(.*)', 
+  '/terms',
+  '/api/webhook/clerk(.*)', 
+  '/api/public-chat(.*)',
+  '/api/guest-thread(.*)',
+  '/api/chat(.*)'
+])
 
 export default clerkMiddleware(async (auth, req) => {
   // Get authentication status
   const authObj = await auth();
   const userId = authObj.userId;
   const path = req.nextUrl.pathname;
-  
-  // If user is not authenticated and trying to access the root page, redirect to sign-in
-  if (!userId && path === '/') {
-    const signInUrl = new URL('/sign-in', req.url);
-    return NextResponse.redirect(signInUrl);
-  }
   
   // For public routes, don't require authentication
   if (isPublicRoute(req)) {

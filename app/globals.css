@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom scrollbar styles for the chatbot */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Ensure chat window positioning is stable */
+.chat-window {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 1000 !important;
+  max-width: calc(100vw - 48px) !important;
+  max-height: calc(100vh - 48px) !important;
+}
+
+/* Ensure header is always visible */
+.chat-header {
+  position: relative !important;
+  z-index: 1001 !important;
+  min-height: 56px !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

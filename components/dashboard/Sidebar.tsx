@@ -429,7 +429,7 @@ if (false) {
                 className={`
                   w-full flex items-center rounded-lg transition-all duration-200
                   ${isExpanded ? 'px-3 py-2.5' : 'justify-center p-2.5'}
-                  bg-[#142F32] hover:bg-[#1a3c40] text-white
+                  bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white
                   ${isLoadingChats ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
               >
@@ -456,15 +456,15 @@ if (false) {
                     text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800
                     ${isLoadingChats ? 'opacity-50 cursor-not-allowed' : ''}
                     ${navigatingTo === item.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : ''}
-                    ${isNavItemActive(item.href) && !navigatingTo ? 'bg-[#E3FFCC]/20 text-[#142F32] dark:text-white border-l-2 border-[#142F32]' : ''}
+                    ${isNavItemActive(item.href) && !navigatingTo ? 'bg-emerald-50 text-emerald-700 dark:text-white border-l-2 border-emerald-600' : ''}
                   `}
                   variants={itemVariants}
                 >
-                  <item.icon className={`h-5 w-5 ${navigatingTo === item.id ? 'text-blue-500' : ''} ${isNavItemActive(item.href) && !navigatingTo ? 'text-[#142F32] dark:text-[#E3FFCC]' : ''}`} />
+                  <item.icon className={`h-5 w-5 ${navigatingTo === item.id ? 'text-blue-500' : ''} ${isNavItemActive(item.href) && !navigatingTo ? 'text-emerald-700 dark:text-emerald-300' : ''}`} />
                   {isExpanded && (
                     <span className={`ml-3 text-sm 
                       ${navigatingTo === item.id ? 'text-blue-600 dark:text-blue-400' : ''}
-                      ${isNavItemActive(item.href) && !navigatingTo ? 'text-[#142F32] dark:text-white' : ''}
+                      ${isNavItemActive(item.href) && !navigatingTo ? 'text-emerald-700 dark:text-white' : ''}
                     `}>
                       {item.label}
                     </span>
@@ -547,7 +547,7 @@ if (false) {
                               w-full flex items-center rounded-lg transition-all duration-200
                               ${isExpanded ? 'px-3 py-2.5' : 'justify-center p-2.5'}
                               ${currentThread === chat.thread_id
-                                ? 'bg-[#E3FFCC]/20 text-[#142F32] dark:text-white border-l-2 border-[#142F32]'
+                                ? 'bg-emerald-50 text-emerald-700 dark:text-white border-l-2 border-emerald-600'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/60'
                               }
                             `}
@@ -559,7 +559,7 @@ if (false) {
                               ) : (
                               <MessageCircle className={`
                                 h-5 w-5 flex-shrink-0
-                                ${currentThread === chat.thread_id ? 'text-[#142F32] dark:text-[#E3FFCC]' : 'text-gray-500 dark:text-gray-400'}
+                                ${currentThread === chat.thread_id ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400'}
                               `} />
                               )}
                               {isExpanded && (
@@ -667,7 +667,7 @@ if (false) {
                   <button
                     onClick={handleCreateChat}
                     disabled={isLoadingChats}
-                    className={`w-full flex items-center justify-center space-x-2 px-4 py-3 bg-[#142F32] hover:bg-[#1a3c40] text-white transition-all rounded-lg ${(isLoadingChats) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white transition-all rounded-lg ${(isLoadingChats) ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <Plus className="h-5 w-5" />
                     <span className="text-sm font-medium">New Chat</span>
@@ -685,18 +685,18 @@ if (false) {
                         className={`w-full flex items-center px-3 py-2.5 rounded-lg transition-all 
                         ${isLoadingChats ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}
                         ${navigatingTo === item.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'}
-                        ${isNavItemActive(item.href) && !navigatingTo ? 'bg-[#E3FFCC]/20 text-[#142F32] dark:text-white border-l-2 border-[#142F32]' : ''}
+                        ${isNavItemActive(item.href) && !navigatingTo ? 'bg-emerald-50 text-emerald-700 dark:text-white border-l-2 border-emerald-600' : ''}
                         `}
                         onClick={() => handleNavigation(item.href, item.id)}
                         disabled={isLoadingChats || navigatingTo === item.id}
                       >
                         <item.icon className={`h-5 w-5 mr-3 
                           ${navigatingTo === item.id ? 'text-blue-500' : ''} 
-                          ${isNavItemActive(item.href) && !navigatingTo ? 'text-[#142F32] dark:text-[#E3FFCC]' : ''}
+                          ${isNavItemActive(item.href) && !navigatingTo ? 'text-emerald-700 dark:text-emerald-300' : ''}
                         `} />
                         <span className={`text-sm 
                           ${navigatingTo === item.id ? 'text-blue-600 dark:text-blue-400' : ''}
-                          ${isNavItemActive(item.href) && !navigatingTo ? 'text-[#142F32] dark:text-white' : ''}
+                          ${isNavItemActive(item.href) && !navigatingTo ? 'text-emerald-700 dark:text-white' : ''}
                         `}>
                           {item.label}
                         </span>
@@ -754,7 +754,7 @@ if (false) {
                                       w-full flex items-center rounded-lg transition-all duration-200
                                       px-3 py-2.5
                                       ${currentThread === chat.thread_id
-                                        ? 'bg-[#E3FFCC]/20 text-[#142F32] dark:text-white border-l-2 border-[#142F32]'
+                                        ? 'bg-emerald-50 text-emerald-700 dark:text-white border-l-2 border-emerald-600'
                                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/60'
                                       }
                                     `}
@@ -762,7 +762,7 @@ if (false) {
                                     <div className="relative flex items-center min-w-0 w-full">
                                       <MessageCircle className={`
                                         h-5 w-5 flex-shrink-0
-                                        ${currentThread === chat.thread_id ? 'text-[#142F32] dark:text-[#E3FFCC]' : 'text-gray-500 dark:text-gray-400'}
+                                        ${currentThread === chat.thread_id ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400'}
                                       `} />
                                       <span className="ml-3 text-sm font-medium truncate flex-1 text-left">
                                         {chat.name}

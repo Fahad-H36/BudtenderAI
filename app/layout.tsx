@@ -20,9 +20,9 @@ const lato = Lato({
 })
 
 export const metadata = {
-  title: "Assistant Platform",
-  description: "AI-powered assistant platform",
-  keywords: "finance, ai, chatbot",
+  title: "BudtenderAI",
+  description: "Your personal AI budtender for cannabis guidance and recommendations",
+  keywords: "cannabis, ai, budtender, recommendations, weed, marijuana",
   favicon: 'favicon.png'
 }
 

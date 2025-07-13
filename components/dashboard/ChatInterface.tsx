@@ -30,6 +30,7 @@ import { SignOutButton } from "@clerk/nextjs"
 import { MessageBubble } from "./MessageBubble"
 import { Message } from "@/app/contexts/ChatContextProvider"
 import Link from 'next/link';
+import { ShortcutAssistance } from "./ShortcutAssistance"
 // import { Switch } from "@/components/ui/switch"
 
 // Animation variants
@@ -493,6 +494,174 @@ export function ChatInterface({
     }
   }
 
+  const handleShortcutClick = (shortcut: string) => {
+    // Set the prompt first
+    setPrompt(shortcut)
+    
+    // Call a modified version of handleSendMessage with the shortcut text
+    handleShortcutSubmit(shortcut)
+  }
+
+  const handleShortcutSubmit = async (messageText: string) => {
+    if (generating || creatingThread || isProcessingRequest || isSubmittingRef.current) {
+      return
+    }
+
+    isSubmittingRef.current = true
+    setIsProcessingRequest(true)
+
+    if (!chatStarted) {
+      setChatStarted(true)
+    }
+
+    if (!messageText.trim()) {
+      setShowSnackbar(true)
+      setSnackbarMessage("error: Please enter a message")
+      isSubmittingRef.current = false
+      setIsProcessingRequest(false)
+      return
+    }
+
+    const latestUserId = userIdRef.current
+    const latestThreadId = currentThreadRef.current || threadId.current
+
+    if (!latestUserId || !latestThreadId) {
+      setShowSnackbar(true)
+      setSnackbarMessage("error: Session information missing. Please refresh the page.")
+      isSubmittingRef.current = false
+      setIsProcessingRequest(false)
+      return
+    }
+
+    const newMessage: Message = {
+      role: "user",
+      content: messageText,
+      attachments: [],
+      status: "success",
+    }
+
+    setMessages((prevMessages) => [...prevMessages, newMessage])
+    setGenerating(true)
+    setIsFirstChunk(true)
+    setPrompt("")
+
+    try {
+      if (messages.length === 0) {
+        const words = messageText.split(" ")
+        const chatName = words.length > 5 ? words.slice(0, 5).join(" ") + "..." : messageText || "New Chat"
+        try {
+          const chats = await addChatHistory(latestUserId, latestThreadId, chatName);
+          if (chats && setChatList) {
+            setChatList(chats.reverse());
+          }
+        } catch (error) {
+          console.error("Error adding chat history:", error);
+        }
+      } else {
+        try {
+          const updatedChats = await updateThreadActivity(latestUserId, latestThreadId);
+          if (updatedChats && updatedChats.length > 0 && setChatList) {
+            setChatList(updatedChats.reverse());
+          }
+        } catch (error) {
+          console.error("Error updating thread activity:", error);
+        }
+      }
+
+      const tempAssistantMessageId = `temp-${Date.now()}`
+      let hasStartedReceivingContent = false
+
+      const endpoint = webSearchEnabled ? "/api/chat-with-functions" : "/api/chat";
+      
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: messageText,
+          threadId: latestThreadId,
+          userId: latestUserId,
+          userName: userName,
+          userEmail: user?.emailAddresses[0].emailAddress,
+          webSearchEnabled: webSearchEnabled,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`)
+      }
+
+      const reader = response.body!.getReader()
+      const decoder = new TextDecoder()
+      let assistantResponse = ""
+
+      setIsFirstChunk(false);
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value)
+          assistantResponse += chunk
+
+          if (!hasStartedReceivingContent && chunk.trim()) {
+            hasStartedReceivingContent = true
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                role: "assistant",
+                content: assistantResponse.trim(),
+                attachments: [],
+                id: tempAssistantMessageId,
+              },
+            ])
+          } else if (hasStartedReceivingContent) {
+            setMessages((prevMessages) => {
+              return prevMessages.map((msg) =>
+                msg.id === tempAssistantMessageId ? { ...msg, content: assistantResponse.trim() } : msg,
+              )
+            })
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 10))
+        }
+      } catch (streamError) {
+        console.error("Error reading stream:", streamError)
+      }
+
+      const cleanedResponse = assistantResponse.trim()
+
+      if (hasStartedReceivingContent) {
+        setMessages((prevMessages) => {
+          return prevMessages.map((msg) =>
+            msg.id === tempAssistantMessageId ? { ...msg, content: cleanedResponse } : msg,
+          )
+        })
+      }
+    } catch (error) {
+      console.error("Error in chat:", error)
+
+      setMessages((prevMessages) => {
+        const lastMessage = prevMessages[prevMessages.length - 1]
+        if (lastMessage && lastMessage.role === "user") {
+          return [...prevMessages.slice(0, -1), { ...lastMessage, status: "error" }]
+        }
+        if (prevMessages.length > 1 && prevMessages[prevMessages.length - 1].role === "assistant") {
+          return prevMessages.slice(0, -1)
+        }
+        return prevMessages
+      })
+
+      setShowSnackbar(true)
+      setSnackbarMessage("error: Error generating response")
+    } finally {
+      setGenerating(false)
+      isSubmittingRef.current = false
+      setIsProcessingRequest(false)
+    }
+  }
+
   useEffect(() => {
     return () => {
       attachedFiles.forEach((file) => {
@@ -581,7 +750,7 @@ export function ChatInterface({
           target.style.overflowY = 'hidden';
         }
       }}
-      placeholder="Type your message here..."
+      placeholder="Ask me anything about weed..."
       className="w-full py-4 px-5 pr-12 bg-white text-[#282930] placeholder-[#777C90] focus:outline-none focus:ring-2 focus:ring-[#E3FFCC]/70 text-sm resize-none min-h-[44px] max-h-[120px] overflow-auto"
       disabled={creatingThread}
       rows={1}
@@ -594,18 +763,18 @@ export function ChatInterface({
 
   return (
     <motion.div 
-      className="flex flex-col h-full w-full bg-[#f9fcf7] relative overflow-hidden"
+      className="flex flex-col h-full w-full bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 relative overflow-hidden"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-[10%] right-[5%] w-[60%] h-[50%] rounded-full bg-gradient-to-br from-[#E3FFCC]/30 to-[#E3FFCC]/10 blur-3xl" />
-        <div className="absolute bottom-[10%] left-[5%] w-[40%] h-[40%] rounded-full bg-gradient-to-tr from-[#E3FFCC]/30 to-[#E3FFCC]/10 blur-3xl" />
+        <div className="absolute -top-[10%] right-[5%] w-[60%] h-[50%] rounded-full bg-gradient-to-br from-emerald-200/30 to-emerald-200/10 blur-3xl" />
+        <div className="absolute bottom-[10%] left-[5%] w-[40%] h-[40%] rounded-full bg-gradient-to-tr from-emerald-200/30 to-emerald-200/10 blur-3xl" />
       </div>
 
       <motion.div 
-        className="fixed top-0 right-0 z-50 h-16 flex items-center justify-end px-4 md:px-6 bg-[#f9fcf7]/95 backdrop-blur-sm border-b border-[#E3FFCC]/20 shadow-sm" 
+        className="fixed top-0 right-0 z-50 h-16 flex items-center justify-end px-4 md:px-6 bg-emerald-50/95 backdrop-blur-sm border-b border-emerald-200/20 shadow-sm" 
         style={{ left: 'var(--sidebar-width, 280px)' }}
         variants={fadeInVariants}
       >
@@ -625,13 +794,13 @@ export function ChatInterface({
             </Link>
           )}
           <button
-            className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E3FFCC]/60 to-[#E3FFCC]/40 flex items-center justify-center hover:from-[#E3FFCC]/80 hover:to-[#E3FFCC]/60 transition-all shadow-md"
+            className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400/60 to-emerald-400/40 flex items-center justify-center hover:from-emerald-400/80 hover:to-emerald-400/60 transition-all shadow-md"
             title="Profile settings"
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
             aria-expanded={isProfileMenuOpen}
             aria-haspopup="true"
           >
-            <User className="h-5 w-5 text-[#142F32]" />
+                          <User className="h-5 w-5 text-white" />
           </button>
 
           <AnimatePresence>
@@ -659,7 +828,7 @@ export function ChatInterface({
                   <p className="text-xs text-[#777C90] font-light mt-0.5">{user?.emailAddresses[0].emailAddress}</p>
                 </div>
                 <div className="py-1">
-                  <SignOutButton>
+                  <SignOutButton redirectUrl="/">
                     <button className="block w-full text-left px-5 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors flex items-center">
                     <span className="w-5 h-5 mr-2 inline-flex items-center justify-center opacity-80">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -709,13 +878,13 @@ export function ChatInterface({
               className={`flex-1 flex flex-col items-center justify-center px-4 overflow-y-auto ${loading ? 'opacity-80' : ''}`}
             >
               <motion.div 
-                className={`w-20 h-20 rounded-full bg-[#E3FFCC]/30 flex items-center justify-center mb-8 ${loading ? 'animate-pulse' : ''}`}
+                className={`w-20 h-20 rounded-full bg-emerald-200/30 flex items-center justify-center mb-8 ${loading ? 'animate-pulse' : ''}`}
                 variants={itemVariants}
               >
-                <MessageSquare className="h-10 w-10 text-[#142F32]" />
+                                  <MessageSquare className="h-10 w-10 text-emerald-700" />
               </motion.div>
               <motion.h2 
-                className="text-2xl font-bold text-[#282930] mb-2"
+                                  className="text-2xl font-bold text-gray-800 mb-2"
                 variants={itemVariants}
               >
                 Hello {userName}
@@ -735,7 +904,7 @@ export function ChatInterface({
                 </motion.div>
               )}
               <motion.p 
-                className="text-[#777C90] text-center max-w-md mb-6"
+                                  className="text-gray-600 text-center max-w-md mb-6"
                 variants={itemVariants}
               >
                 How can I help you today?
@@ -745,6 +914,7 @@ export function ChatInterface({
                 className="w-full max-w-xl"
                 variants={itemVariants}
               >
+                <ShortcutAssistance onShortcutClick={handleShortcutClick} />
                 <form onSubmit={handleSendMessage}>
                   <div className="flex flex-col gap-3 w-full">
                     {renderAttachedFiles()}
@@ -760,7 +930,7 @@ export function ChatInterface({
                         className="data-[state=checked]:bg-[#142F32]"
                       />
                     </div> */}
-                    <div className="flex w-full rounded-lg overflow-hidden shadow-lg border border-[#E3FFCC]/60">
+                    <div className="flex w-full rounded-lg overflow-hidden shadow-lg border border-emerald-200/60">
                       <div className="relative flex-1 flex items-center bg-white rounded-l-lg">
                         {renderInputField()}
                       </div>
@@ -772,7 +942,7 @@ export function ChatInterface({
                           isProcessingRequest ||
                           (!prompt.trim() && attachedFiles.length === 0)
                         }
-                        className="p-4 bg-gradient-to-r from-[#142F32] to-[#1a3c40] hover:from-[#142F32]/90 hover:to-[#1a3c40]/90 text-white disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg transition-all shadow-md flex items-center justify-center"
+                        className="p-4 bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg transition-all shadow-md flex items-center justify-center"
                       >
                         {generating || isProcessingRequest ? (
                           <Loader2 className="h-5 w-5 animate-spin" />
@@ -814,7 +984,7 @@ export function ChatInterface({
                             className={`rounded-lg p-3 max-w-[85%] ${
                               i % 2 === 0 
                                 ? 'bg-white shadow-sm animate-pulse' 
-                                : 'bg-[#E3FFCC]/20 shadow-sm animate-pulse'
+                                : 'bg-emerald-100/20 shadow-sm animate-pulse'
                             }`}
                             style={{ animationDelay: `${i * 0.15}s` }}
                           >
@@ -844,19 +1014,19 @@ export function ChatInterface({
 
                     {(generating && isFirstChunk) && (
                       <motion.div 
-                        className="p-4 rounded-lg max-w-[240px] flex items-center space-x-2 bg-gradient-to-r from-white to-[#f9fcf7] border border-[#E3FFCC]/60 shadow-sm"
+                        className="p-4 rounded-lg max-w-[240px] flex items-center space-x-2 bg-gradient-to-r from-white to-emerald-50 border border-emerald-200/60 shadow-sm"
                         variants={fadeInVariants}
                       >
                         {webSearchEnabled ? (
                           <>
-                            <Globe className="h-4 w-4 text-[#142F32] animate-pulse" />
-                            <span className="text-sm text-[#142F32]">Thinking and searching...</span>
+                            <Globe className="h-4 w-4 text-emerald-700 animate-pulse" />
+                            <span className="text-sm text-emerald-700">Thinking and searching...</span>
                           </>
                         ) : (
                           <>
-                            <div className="bg-[#142F32] h-2 w-2 rounded-full animate-[bounce_1s_infinite_-0.3s]"></div>
-                            <div className="bg-[#142F32] h-2 w-2 rounded-full animate-[bounce_1s_infinite_-0.15s]"></div>
-                            <div className="bg-[#142F32] h-2 w-2 rounded-full animate-[bounce_1s_infinite]"></div>
+                            <div className="bg-emerald-700 h-2 w-2 rounded-full animate-[bounce_1s_infinite_-0.3s]"></div>
+                            <div className="bg-emerald-700 h-2 w-2 rounded-full animate-[bounce_1s_infinite_-0.15s]"></div>
+                            <div className="bg-emerald-700 h-2 w-2 rounded-full animate-[bounce_1s_infinite]"></div>
                           </>
                         )}
                       </motion.div>
@@ -881,13 +1051,12 @@ export function ChatInterface({
             className="fixed bottom-0 right-0 p-3 border-t border-[#E3FFCC]/30 z-20 flex justify-center"
             style={{
               boxShadow: "0 -4px 20px rgba(119, 124, 144, 0.07)",
-              backgroundColor: "#f9fcf7",
+              backgroundColor: "rgb(240 253 244)",
               left: 'var(--sidebar-width, 280px)',
               transition: 'left 300ms cubic-bezier(0.4, 0, 0.2, 1)'
             }}
           >
             <div className="w-full max-w-3xl mx-auto">
-            
               <form onSubmit={handleSendMessage}>
                 <div className="flex flex-col gap-3 w-full">
                   {renderAttachedFiles()}
@@ -903,7 +1072,7 @@ export function ChatInterface({
                       className="data-[state=checked]:bg-[#142F32]"
                     />
                   </div> */}
-                  <div className="flex w-full rounded-lg overflow-hidden shadow-lg border border-[#E3FFCC]/60">
+                  <div className="flex w-full rounded-lg overflow-hidden shadow-lg border border-emerald-200/60">
                     <div className="relative flex-1 flex items-center bg-white rounded-l-lg">
                       {renderInputField()}
                     </div>
@@ -915,7 +1084,7 @@ export function ChatInterface({
                         isProcessingRequest ||
                         (!prompt.trim() && attachedFiles.length === 0)
                       }
-                      className="p-4 bg-gradient-to-r from-[#142F32] to-[#1a3c40] hover:from-[#142F32]/90 hover:to-[#1a3c40]/90 text-white disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg transition-all shadow-md flex items-center justify-center"
+                      className="p-4 bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg transition-all shadow-md flex items-center justify-center"
                     >
                       {generating || isProcessingRequest ? (
                         <Loader2 className="h-5 w-5 animate-spin" />

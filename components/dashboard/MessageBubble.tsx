@@ -53,8 +53,8 @@ export function MessageBubble({
         isUser
           ? status === "error"
             ? "bg-red-100 text-red-700 border border-red-200 ml-auto rounded-tr-none max-w-[85%] md:max-w-[75%] shadow-sm"
-            : "bg-gradient-to-r from-[#142F32] to-[#1a3c40] text-white ml-auto rounded-tr-none max-w-[85%] md:max-w-[75%] shadow-sm"
-          : "bg-gradient-to-r from-white to-[#f9fcf7] border border-[#E3FFCC]/60 text-[#282930] rounded-tl-none inline-block max-w-[95%] md:max-w-[90%] shadow-sm"
+            : "bg-gradient-to-r from-emerald-600 to-green-700 text-white ml-auto rounded-tr-none max-w-[85%] md:max-w-[75%] shadow-sm"
+          : "bg-gradient-to-r from-white to-emerald-50 border border-emerald-200/60 text-gray-800 rounded-tl-none inline-block max-w-[95%] md:max-w-[90%] shadow-sm"
       )}
       style={{
         overflowWrap: 'break-word',
@@ -70,18 +70,18 @@ export function MessageBubble({
             components={{
               // Customize component rendering
               p: ({...props}) => <p className="mb-2 last:mb-0" {...props} />,
-              a: ({...props}) => <a className={cn("underline", isUser ? "text-white/90 hover:text-white" : "text-[#142F32] hover:text-[#142F32]/80")} target="_blank" rel="noopener noreferrer" {...props} />,
+              a: ({...props}) => <a className={cn("underline", isUser ? "text-white/90 hover:text-white" : "text-emerald-700 hover:text-emerald-800")} target="_blank" rel="noopener noreferrer" {...props} />,
               ul: ({...props}) => <ul className="list-disc pl-5 mb-2" {...props} />,
               ol: ({...props}) => <ol className="list-decimal pl-5 mb-2" {...props} />,
               li: ({...props}) => <li className="mb-1" {...props} />,
               h1: ({...props}) => <h1 className="text-lg font-bold mb-2 mt-3" {...props} />,
               h2: ({...props}) => <h2 className="text-md font-bold mb-2 mt-3" {...props} />,
               h3: ({...props}) => <h3 className="text-sm font-bold mb-1 mt-2" {...props} />,
-              blockquote: ({...props}) => <blockquote className={cn("border-l-2 pl-3 italic my-2", isUser ? "border-white/30" : "border-[#142F32]/30")} {...props} />,
-              hr: ({...props}) => <hr className={cn("my-3 border-t", isUser ? "border-white/20" : "border-[#142F32]/20")} {...props} />,
+              blockquote: ({...props}) => <blockquote className={cn("border-l-2 pl-3 italic my-2", isUser ? "border-white/30" : "border-emerald-600/30")} {...props} />,
+              hr: ({...props}) => <hr className={cn("my-3 border-t", isUser ? "border-white/20" : "border-emerald-600/20")} {...props} />,
               table: ({...props}) => <div className="overflow-x-auto my-2"><table className="min-w-full border-collapse" {...props} /></div>,
-              th: ({...props}) => <th className={cn("px-2 py-1 border", isUser ? "border-white/20 bg-white/10" : "border-[#142F32]/20 bg-[#142F32]/5")} {...props} />,
-              td: ({...props}) => <td className={cn("px-2 py-1 border", isUser ? "border-white/20" : "border-[#142F32]/20")} {...props} />,
+              th: ({...props}) => <th className={cn("px-2 py-1 border", isUser ? "border-white/20 bg-white/10" : "border-emerald-600/20 bg-emerald-600/5")} {...props} />,
+              td: ({...props}) => <td className={cn("px-2 py-1 border", isUser ? "border-white/20" : "border-emerald-600/20")} {...props} />,
               img: ({...props}) => <img className="max-w-full rounded my-2" {...props} alt={props.alt || "Image"} />,
               code: ({ className, children }) => {
                 return (
@@ -107,7 +107,7 @@ export function MessageBubble({
       
       {/* Render attachments as simple pills */}
       {attachments && attachments.length > 0 && (
-        <div className={cn("mt-2 flex flex-wrap gap-2", content ? "pt-2 border-t" : "", isUser ? "border-white/20" : "border-[#142F32]/10")}>
+        <div className={cn("mt-2 flex flex-wrap gap-2", content ? "pt-2 border-t" : "", isUser ? "border-white/20" : "border-emerald-600/10")}>
           {attachments.map((file) => (
             <a 
               key={file.id} 
@@ -118,7 +118,7 @@ export function MessageBubble({
                 "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors",
                 isUser 
                   ? "bg-white/10 hover:bg-white/20 text-white/90"
-                  : "bg-[#142F32]/5 hover:bg-[#142F32]/10 text-[#142F32]/90"
+                  : "bg-emerald-600/5 hover:bg-emerald-600/10 text-emerald-700"
               )}
               title={file.name}
             >
