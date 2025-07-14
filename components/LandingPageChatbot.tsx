@@ -338,7 +338,7 @@ export function LandingPageChatbot({ onSignUpClick }: LandingPageChatbotProps) {
                        value={inputValue}
                        onChange={(e) => setInputValue(e.target.value)}
                        onKeyPress={handleKeyPress}
-                       placeholder="What are you looking for today?"
+                       placeholder="Ask Budtender"
                        className="flex-1 px-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                        disabled={isLoading}
                      />
