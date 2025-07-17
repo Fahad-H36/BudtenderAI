@@ -76,7 +76,7 @@ export default function TermsPage() {
               Please read these terms carefully before using BudtenderAI
             </p>
             <p className="text-sm text-gray-500 mt-2">
-              Last updated: {new Date().toLocaleDateString()}
+              Effective Date: 07/14/2025
             </p>
           </motion.div>
 
@@ -86,94 +86,100 @@ export default function TermsPage() {
           >
             <div className="prose prose-lg max-w-none">
               
+              <motion.div variants={itemVariants} className="mb-8 p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg">
+                <p className="text-gray-700 leading-relaxed">
+                  Welcome to Budtender AI, a service provided by AetherLogic LLC (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). These Terms and Conditions (&quot;Terms&quot;) govern your use of our website and services, including our AI-powered virtual budtender chatbot designed for cannabis product guidance and education.
+                  <br /><br />
+                  By accessing or using our site or services, you agree to these Terms. If you do not agree, please do not use our website or services.
+                </p>
+              </motion.div>
+
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">1. Acceptance of Terms</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">1. Eligibility</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  By accessing and using BudtenderAI (&quot;the Service&quot;), you accept and agree to be bound by the terms and provision of this agreement. 
-                  If you do not agree to abide by the above, please do not use this service.
+                  You must be at least 21 years old or of legal age to consume cannabis in your jurisdiction. By using this website, you confirm you meet these requirements.
                 </p>
               </motion.section>
 
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">2. Age Restriction</h2>
-                <p className="text-gray-600 leading-relaxed">
-                  You must be at least 21 years of age to use this service. By using BudtenderAI, you represent and warrant that you are at least 21 years old.
-                  This service is not intended for use by minors.
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">2. Services Provided</h2>
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  Budtender AI offers:
+                </p>
+                <ul className="text-gray-600 leading-relaxed list-disc list-inside space-y-2">
+                  <li>Strain and product recommendations based on user input</li>
+                  <li>Educational content on cannabis effects, types, and usage</li>
+                  <li>Website and chatbot integration services for dispensaries</li>
+                </ul>
+                <p className="text-gray-600 leading-relaxed mt-4">
+                  Budtender AI does not sell or distribute cannabis products.
                 </p>
               </motion.section>
 
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">3. Service Description</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">3. No Medical Advice</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  BudtenderAI is an AI-powered cannabis recommendation service that provides personalized product suggestions based on user preferences and goals. 
-                  We provide informational guidance only and do not sell, distribute, or provide cannabis products directly.
+                  The information provided by Budtender AI is for educational and informational purposes only. It is not intended to diagnose, treat, cure, or prevent any disease. Always consult a licensed medical professional before using cannabis for medical purposes.
                 </p>
               </motion.section>
 
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">4. No Medical Claims</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">4. User Data and Privacy</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  BudtenderAI does not provide medical advice, diagnosis, or treatment. Our recommendations are for informational purposes only and should not replace professional medical consultation. 
-                  Always consult with a healthcare provider before using cannabis for medical purposes.
+                  We may collect anonymized interaction data to improve service quality. We do not collect, store, or sell personal health information without consent. Please review our Privacy Policy for details.
                 </p>
               </motion.section>
 
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">5. Legal Compliance</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">5. Disclaimers</h2>
+                <ul className="text-gray-600 leading-relaxed list-disc list-inside space-y-2">
+                  <li>Cannabis laws vary by state/country. You are responsible for complying with all local laws.</li>
+                  <li>We do not guarantee that the recommendations will lead to any specific experience or result.</li>
+                  <li>Our chatbot is powered by AI and may generate responses that require human discretion.</li>
+                </ul>
+              </motion.section>
+
+              <motion.section variants={itemVariants} className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">6. Intellectual Property</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  You are responsible for ensuring that your use of cannabis complies with all applicable local, state, and federal laws. 
-                  Cannabis laws vary by jurisdiction, and it is your responsibility to understand and follow the laws in your area.
+                  All content on this site, including the Budtender AI system, branding, logos, software, and copy, is the intellectual property of AetherLogic LLC and protected under copyright and trademark law.
                 </p>
               </motion.section>
 
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">6. Privacy and Data</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">7. Limitation of Liability</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  We are committed to protecting your privacy. All conversations and personal information are kept confidential and secure. 
-                  We do not share your personal data with third parties without your explicit consent, except as required by law.
+                  To the fullest extent permitted by law, AetherLogic LLC and its affiliates shall not be liable for any direct, indirect, incidental, or consequential damages resulting from your use of the Budtender AI service.
                 </p>
               </motion.section>
 
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">7. Use Restrictions</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">8. Service Availability</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  You agree not to use the service for any unlawful purpose or in any way that could damage, disable, or impair the service. 
-                  You may not attempt to gain unauthorized access to any part of the service or its related systems.
+                  We reserve the right to modify or discontinue the service at any time without notice. We are not liable for any downtime, data loss, or interruptions in service.
                 </p>
               </motion.section>
 
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">8. Disclaimer of Warranties</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">9. Modifications</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  The service is provided &quot;as is&quot; without warranty of any kind. We make no representations about the accuracy, reliability, 
-                  completeness, or timeliness of the content or recommendations provided by BudtenderAI.
+                  We may update these Terms at any time. Changes will be posted on this page with an updated effective date. Continued use after changes constitutes acceptance.
                 </p>
               </motion.section>
 
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">9. Limitation of Liability</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">10. Governing Law</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  BudtenderAI shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the service. 
-                  Our total liability shall not exceed the amount paid by you for the service, if any.
+                  These Terms are governed by the laws of the State of Ohio, without regard to conflict of law principles. Any disputes shall be resolved in the courts of Cuyahoga County, Ohio.
                 </p>
               </motion.section>
 
               <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">10. Changes to Terms</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">11. Contact</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting to the website. 
-                  Your continued use of the service constitutes acceptance of any changes to these terms.
-                </p>
-              </motion.section>
-
-              <motion.section variants={itemVariants} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">11. Contact Information</h2>
-                <p className="text-gray-600 leading-relaxed">
-                  If you have any questions about these Terms and Conditions, please contact us at: 
+                  For questions about these Terms or our services, contact us at:
                   <br />
-                  <strong>Email:</strong> support@budtenderai.com
-                  <br />
-                  <strong>Address:</strong> [Company Address - To be updated]
+                  📧 <strong>budtenderai@gmail.com</strong>
                 </p>
               </motion.section>
 

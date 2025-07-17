@@ -3,12 +3,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  MessageCircle, 
   Send, 
   X, 
   Minimize2,
   Maximize2,
-  Leaf,
   Loader2,
   Bot
 } from 'lucide-react';
@@ -194,9 +192,9 @@ export function LandingPageChatbot({ onSignUpClick }: LandingPageChatbotProps) {
              animate={{ scale: 1, opacity: 1 }}
              exit={{ scale: 0, opacity: 0 }}
              onClick={openChat}
-             className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
-             whileHover={{ scale: 1.1 }}
-             whileTap={{ scale: 0.9 }}
+             className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group px-6 py-3"
+             whileHover={{ scale: 1.05 }}
+             whileTap={{ scale: 0.95 }}
              style={{ 
                position: 'fixed',
                bottom: '24px',
@@ -204,7 +202,9 @@ export function LandingPageChatbot({ onSignUpClick }: LandingPageChatbotProps) {
                zIndex: 1000
              }}
            >
-             <MessageCircle className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
+             <span className="text-white font-semibold text-sm whitespace-nowrap group-hover:scale-105 transition-transform">
+               Ask Budtender
+             </span>
              {/* Pulse animation */}
              <div className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-20"></div>
            </motion.button>
@@ -230,9 +230,6 @@ export function LandingPageChatbot({ onSignUpClick }: LandingPageChatbotProps) {
              {/* Header - Always visible */}
              <div className="chat-header bg-gradient-to-r from-emerald-500 to-green-600 p-3 flex items-center justify-between flex-shrink-0 rounded-t-2xl">
                <div className="flex items-center space-x-2 min-w-0 flex-1">
-                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                   <Leaf className="h-5 w-5 text-white" />
-                 </div>
                  <div className="min-w-0 flex-1">
                    <h3 className="text-white font-semibold text-sm truncate">BudtenderAI</h3>
                    {!isMinimized && (
