@@ -6,15 +6,15 @@ export const en = {
     },
     header: {
         title: "About",
-        about: "This is a project that aims to demonstrate how to use OpenAI Realtime API with WebRTC in a modern Next 15 project. It has shadcn/ui components already installed and the WebRTC audio session hook already implemented. Clone the project and define your own tools.",
-        banner: "🎉 Check out the new OpenAI Realtime Blocks UI Library for Next.js!",
+        about: "BudtenderAI is your personal cannabis assistant powered by advanced AI technology. Get personalized product recommendations, learn about effects and dosages, and discover the perfect cannabis products for your needs.",
+        banner: "🎉 Welcome to BudtenderAI - Your Personal Cannabis Guide!",
         bannerLink: "Learn more →",
         beta: "Beta",
         dark: "Dark",
         github: "Star on GitHub",
         language: "Language",
         light: "Light",
-        logo: "OpenAI Realtime Starter",
+        logo: "BudtenderAI",
         system: "System",
         theme: "Toggle theme",
         twitter: "Follow on"
@@ -22,7 +22,7 @@ export const en = {
     hero: {
         badge: "Next.js + shadcn/ui",
         subtitle: "Demo by clicking the button below and try available tools",
-        title: "OpenAI Realtime API (WebRTC)"
+        title: "BudtenderAI Cannabis Assistant"
     },
     messageControls: {
         content: "Content",

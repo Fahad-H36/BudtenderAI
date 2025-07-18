@@ -5,11 +5,12 @@ export const dynamic = 'force-dynamic'
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Shield, Users, MessageSquare, LogOut, Menu, X, BarChart3, ArrowLeft } from "lucide-react"
+import { Users, MessageSquare, LogOut, Menu, X, BarChart3, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useRouter, usePathname } from "next/navigation"
 import { SignOutButton, useUser } from "@clerk/nextjs"
 import { motion, AnimatePresence } from "framer-motion"
+import { Logo } from "@/components/ui/Logo"
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -133,14 +134,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
-                  className="flex items-center space-x-3"
+                  className="flex items-center space-x-1"
                 >
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Shield className="h-6 w-6 text-blue-600" />
+                  <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                    <Logo width={28} height={28} />
                   </div>
                   <div>
                     <h1 className="text-lg font-semibold text-gray-900">Admin Panel</h1>
-                    <p className="text-xs text-gray-500">Finance Chatbot</p>
+                    <p className="text-xs text-gray-500">BudtenderAI</p>
                   </div>
                 </motion.div>
               ) : (
@@ -149,9 +150,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="p-2 bg-blue-100 rounded-lg mx-auto"
+                  className="w-10 h-10 bg-white rounded-lg mx-auto flex items-center justify-center shadow-sm"
                 >
-                  <Shield className="h-6 w-6 text-blue-600" />
+                  <Logo width={28} height={28} />
                 </motion.div>
               )}
             </AnimatePresence>

@@ -1,7 +1,8 @@
 "use client"
 
 import { motion } from 'framer-motion';
-import { Leaf, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { Logo } from '@/components/ui/Logo';
 import Link from 'next/link';
 
 export default function TermsPage() {
@@ -40,13 +41,11 @@ export default function TermsPage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-3 hover:scale-105 transition-transform">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-600 rounded-full flex items-center justify-center">
-                <Leaf className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent">
-                BudtenderAI
-              </span>
+                                        <Link href="/" className="flex items-center space-x-1 hover:scale-105 transition-transform">
+                <Logo width={36} height={36} />
+                <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent">
+                  BudtenderAI
+                </span>
             </Link>
             
             <Link 

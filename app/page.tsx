@@ -6,17 +6,16 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { 
-  Leaf, 
   MessageCircle, 
   Search, 
   Shield,  
   ChevronRight, 
-  Sparkles,
   Brain,
   Users,
   ArrowRight
 } from 'lucide-react';
 import { LandingPageChatbot } from '@/components/LandingPageChatbot';
+import { Logo } from '@/components/ui/Logo';
 
 export default function HomePage() {
   const router = useRouter();
@@ -40,8 +39,8 @@ export default function HomePage() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-green-600 rounded-full flex items-center justify-center mb-4">
-            <Leaf className="h-8 w-8 text-white animate-pulse" />
+          <div className="mb-4">
+            <Logo width={80} height={80} className="animate-pulse" />
           </div>
           <h2 className="text-lg font-semibold text-gray-700">Redirecting to dashboard...</h2>
         </motion.div>
@@ -123,13 +122,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <motion.div 
-              className="flex items-center space-x-2 sm:space-x-3"
+              className="flex items-center space-x-1 sm:space-x-1.5"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-400 to-green-600 rounded-full flex items-center justify-center">
-                <Leaf className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
-              </div>
+              <Logo width={36} height={36} className="sm:w-12 sm:h-12" />
               <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent">
                 BudtenderAI
               </span>
@@ -213,17 +210,8 @@ export default function HomePage() {
               className="flex justify-center mb-6 sm:mb-8"
               variants={floatingVariants}
             >
-              <div className="relative">
-                <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-emerald-400 to-green-600 rounded-full flex items-center justify-center shadow-2xl">
-                  <Leaf className="h-8 w-8 sm:h-12 sm:w-12 text-white" />
-                </div>
-                <motion.div
-                  className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                >
-                  <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-                </motion.div>
+              <div>
+                <Logo width={128} height={128} className="sm:w-40 sm:h-40 filter drop-shadow-2xl" />
               </div>
             </motion.div>
 
@@ -499,29 +487,34 @@ export default function HomePage() {
 
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex justify-center items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-600 rounded-full flex items-center justify-center">
-              <Leaf className="h-6 w-6 text-white" />
+      <footer className="bg-gray-900 text-white py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="flex justify-center items-center space-x-1 sm:space-x-1.5 mb-8">
+              <Logo width={36} height={36} className="sm:w-12 sm:h-12" />
+              <span className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">
+                BudtenderAI
+              </span>
             </div>
-            <span className="text-2xl font-bold">BudtenderAI</span>
-          </div>
-          <p className="text-gray-400 mb-6">
-            Your trusted AI companion for cannabis guidance and education
-          </p>
-          <div className="border-t border-gray-800 pt-6">
-            <div className="flex justify-center items-center space-x-4 mb-4">
-              <Link 
-                href="/terms" 
-                className="text-emerald-400 hover:text-emerald-300 transition-colors underline"
-              >
-                Terms and Conditions
-              </Link>
-            </div>
-            <p className="text-gray-500 text-sm">
-              © 2024 BudtenderAI. All rights reserved.
+            <p className="text-gray-300 text-lg sm:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
+              Your trusted AI companion for cannabis guidance and education
             </p>
+          </div>
+          
+          <div className="border-t border-gray-700 pt-8">
+            <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+              <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6">
+                <Link 
+                  href="/terms" 
+                  className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium"
+                >
+                  Terms and Conditions
+                </Link>
+              </div>
+              <p className="text-gray-400 text-sm">
+                © 2024 BudtenderAI. All rights reserved.
+              </p>
+            </div>
           </div>
         </div>
       </footer>

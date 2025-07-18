@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, Zap, DollarSign, Leaf, Moon, ShoppingCart } from "lucide-react"
+import { ChevronDown, Zap, DollarSign, Moon, ShoppingCart } from "lucide-react"
+import { Logo } from "@/components/ui/Logo"
 
 interface ShortcutAssistanceProps {
   onShortcutClick: (shortcut: string) => void
@@ -38,7 +39,7 @@ export function ShortcutAssistance({ onShortcutClick }: ShortcutAssistanceProps)
     },
     {
       id: "strongest",
-      icon: <Leaf className="h-4 w-4" />,
+      icon: <Logo width={16} height={16} />,
       text: "What's the strongest sativa you have?",
       hasHover: false,
     },

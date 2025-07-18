@@ -10,6 +10,7 @@ import {
   Loader2,
   Bot
 } from 'lucide-react';
+import { Logo } from '@/components/ui/Logo';
 
 interface Message {
   id: string;
@@ -229,7 +230,10 @@ export function LandingPageChatbot({ onSignUpClick }: LandingPageChatbotProps) {
            >
              {/* Header - Always visible */}
              <div className="chat-header bg-gradient-to-r from-emerald-500 to-green-600 p-3 flex items-center justify-between flex-shrink-0 rounded-t-2xl">
-               <div className="flex items-center space-x-2 min-w-0 flex-1">
+               <div className="flex items-center space-x-1 min-w-0 flex-1">
+                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                   <Logo width={20} height={20} />
+                 </div>
                  <div className="min-w-0 flex-1">
                    <h3 className="text-white font-semibold text-sm truncate">BudtenderAI</h3>
                    {!isMinimized && (

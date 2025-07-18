@@ -23,7 +23,7 @@ export const metadata = {
   title: "BudtenderAI",
   description: "Your personal AI budtender for cannabis guidance and recommendations",
   keywords: "cannabis, ai, budtender, recommendations, weed, marijuana",
-  favicon: 'favicon.png'
+  favicon: '/budtender_logo.svg'
 }
 
 export default function RootLayout({
@@ -34,7 +34,8 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/budtender_logo.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
 
         <body className={`${dmSans.variable} ${lato.variable} antialiased`}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
