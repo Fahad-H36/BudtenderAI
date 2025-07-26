@@ -10,7 +10,10 @@ import {
   Activity,
   TrendingUp,
   Clock,
-  ChevronRight
+  ChevronRight,
+  RefreshCw,
+  Calendar,
+  BarChart3
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -41,16 +44,26 @@ export default function AdminDashboard() {
   const [chats, setChats] = useState<ChatData[]>([]);
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
   // Fetch data on component mount
   useEffect(() => {
     fetchData();
+    
+    // Set up auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchData(true);
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
+      if (silent) setRefreshing(true);
       
       // Fetch users and chats in parallel
       const [usersResponse, chatsResponse] = await Promise.all([
@@ -67,11 +80,19 @@ export default function AdminDashboard() {
         const chatsData = await chatsResponse.json();
         setChats(chatsData);
       }
+      
+      setLastRefresh(new Date());
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  // Manual refresh function
+  const handleRefresh = () => {
+    fetchData();
   };
 
   // Filter functions
@@ -90,14 +111,37 @@ export default function AdminDashboard() {
     });
   };
 
-  // Calculate statistics
+  // Calculate enhanced statistics
   const totalUsers = users.length;
   const totalChats = chats.length;
+  
+  // Users today (same calendar day)
+  const today = new Date();
   const todayUsers = users.filter(user => {
     const userDate = new Date(user.created_at);
-    const today = new Date();
     return userDate.toDateString() === today.toDateString();
   }).length;
+
+  // Users this week (last 7 days)
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  const thisWeekUsers = users.filter(user => {
+    const userDate = new Date(user.created_at);
+    return userDate > weekAgo;
+  }).length;
+
+  // Users last week (for growth rate calculation)
+  const twoWeeksAgo = new Date();
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+  const lastWeekUsers = users.filter(user => {
+    const userDate = new Date(user.created_at);
+    return userDate > twoWeeksAgo && userDate <= weekAgo;
+  }).length;
+
+  // Growth rate calculation (this week vs last week)
+  const growthRate = lastWeekUsers > 0 
+    ? Math.round(((thisWeekUsers - lastWeekUsers) / lastWeekUsers) * 100)
+    : thisWeekUsers > 0 ? 100 : 0;
 
   const recentChats = chats
     .sort((a, b) => new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime())
@@ -127,7 +171,11 @@ export default function AdminDashboard() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
           <p className="text-gray-600 mt-1">
-            Welcome to the admin dashboard. Here&apos;s what&apos;s happening with your finance chatbot.
+            Welcome to the admin dashboard. Here&apos;s what&apos;s happening with BudtenderAI.
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            Last updated: {lastRefresh.toLocaleTimeString()} 
+            {refreshing && <span className="ml-2 text-blue-600">• Refreshing...</span>}
           </p>
         </div>
         
@@ -141,24 +189,34 @@ export default function AdminDashboard() {
               className="pl-10 w-64"
             />
           </div>
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="flex items-center space-x-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </Button>
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="bg-white border border-gray-200 shadow-sm">
+          <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalUsers}</p>
-                  <p className="text-sm text-green-600 mt-1">
-                    +{todayUsers} today
+                  <p className="text-3xl font-bold text-gray-900">{totalUsers.toLocaleString()}</p>
+                  <p className="text-sm text-green-600 mt-1 flex items-center">
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                    {thisWeekUsers} this week
                   </p>
                 </div>
                 <div className="p-3 bg-blue-100 rounded-full">
@@ -174,18 +232,19 @@ export default function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="bg-white border border-gray-200 shadow-sm">
+          <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Chats</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalChats}</p>
-                  <p className="text-sm text-blue-600 mt-1">
-                    {Math.round(totalChats / Math.max(totalUsers, 1) * 10) / 10} per user
+                  <p className="text-sm font-medium text-gray-600">New Users Today</p>
+                  <p className="text-3xl font-bold text-gray-900">{todayUsers}</p>
+                  <p className="text-sm text-blue-600 mt-1 flex items-center">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    {((todayUsers / Math.max(totalUsers, 1)) * 100).toFixed(1)}% of total
                   </p>
                 </div>
                 <div className="p-3 bg-green-100 rounded-full">
-                  <MessageSquare className="h-6 w-6 text-green-600" />
+                  <User className="h-6 w-6 text-green-600" />
                 </div>
               </div>
             </CardContent>
@@ -197,14 +256,15 @@ export default function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card className="bg-white border border-gray-200 shadow-sm">
+          <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Active Today</p>
-                  <p className="text-3xl font-bold text-gray-900">{todayUsers}</p>
-                  <p className="text-sm text-orange-600 mt-1">
-                    New registrations
+                  <p className="text-sm font-medium text-gray-600">Users This Week</p>
+                  <p className="text-3xl font-bold text-gray-900">{thisWeekUsers}</p>
+                  <p className="text-sm text-orange-600 mt-1 flex items-center">
+                    <Activity className="h-3 w-3 mr-1" />
+                    Last 7 days
                   </p>
                 </div>
                 <div className="p-3 bg-orange-100 rounded-full">
@@ -220,20 +280,21 @@ export default function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="bg-white border border-gray-200 shadow-sm">
+          <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Growth Rate</p>
                   <p className="text-3xl font-bold text-gray-900">
-                    {totalUsers > 0 ? Math.round((todayUsers / totalUsers) * 100) : 0}%
+                    {growthRate >= 0 ? '+' : ''}{growthRate}%
                   </p>
-                  <p className="text-sm text-purple-600 mt-1">
-                    Daily growth
+                  <p className={`text-sm mt-1 flex items-center ${growthRate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <TrendingUp className={`h-3 w-3 mr-1 ${growthRate < 0 ? 'rotate-180' : ''}`} />
+                    Week over week
                   </p>
                 </div>
-                <div className="p-3 bg-purple-100 rounded-full">
-                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                <div className={`p-3 rounded-full ${growthRate >= 0 ? 'bg-purple-100' : 'bg-red-100'}`}>
+                  <BarChart3 className={`h-6 w-6 ${growthRate >= 0 ? 'text-purple-600' : 'text-red-600'}`} />
                 </div>
               </div>
             </CardContent>
@@ -252,7 +313,7 @@ export default function AdminDashboard() {
           <Card className="bg-white border border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="flex text-gray-800 items-center justify-between">
-                <span>Recent Users</span>
+                <span>Recent Users (Last 5)</span>
                 <Users className="h-5 w-5 text-gray-500" />
               </CardTitle>
             </CardHeader>
@@ -262,7 +323,7 @@ export default function AdminDashboard() {
                   <p className="text-gray-500 text-center py-8">No users yet</p>
                 ) : (
                   recentUsers.map((user) => (
-                    <div key={user.user_id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <div key={user.user_id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                       <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                         <User className="h-5 w-5 text-blue-600" />
                       </div>
@@ -287,7 +348,7 @@ export default function AdminDashboard() {
           </Card>
         </motion.div>
 
-        {/* Recent Chats */}
+        {/* Recent Conversations */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -296,7 +357,7 @@ export default function AdminDashboard() {
           <Card className="bg-white border border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="flex text-gray-800 items-center justify-between">
-                <span>Recent Conversations</span>
+                <span>Recent Conversations (Last 5)</span>
                 <MessageSquare className="h-5 w-5 text-gray-500" />
               </CardTitle>
             </CardHeader>
@@ -315,7 +376,7 @@ export default function AdminDashboard() {
                           {chat.thread_name}
                         </p>
                         <p className="text-xs text-gray-500 truncate">
-                          {chat.user_name} • {chat.user_email}
+                          {chat.user_name || chat.user_email.split('@')[0]} • {chat.user_email}
                         </p>
                       </div>
                       <div className="text-right flex items-center space-x-2">
@@ -347,30 +408,60 @@ export default function AdminDashboard() {
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Button 
                 variant="outline" 
-                className="h-20 flex flex-col items-center justify-center space-y-2"
+                className="h-20 flex flex-col items-center justify-center space-y-2 hover:bg-blue-50 hover:border-blue-200"
                 onClick={() => window.location.href = '/admin/users'}
               >
-                <Users className="h-6 w-6" />
-                <span>View All Users</span>
+                <Users className="h-6 w-6 text-blue-600" />
+                <span>Manage Users</span>
               </Button>
               <Button 
                 variant="outline" 
-                className="h-20 flex flex-col items-center justify-center space-y-2"
+                className="h-20 flex flex-col items-center justify-center space-y-2 hover:bg-green-50 hover:border-green-200"
                 onClick={() => window.location.href = '/admin/chats'}
               >
-                <MessageSquare className="h-6 w-6" />
-                <span>View All Chats</span>
+                <MessageSquare className="h-6 w-6 text-green-600" />
+                <span>View Chats</span>
               </Button>
               <Button 
                 variant="outline" 
-                className="h-20 flex flex-col items-center justify-center space-y-2"
-                onClick={fetchData}
+                className="h-20 flex flex-col items-center justify-center space-y-2 hover:bg-purple-50 hover:border-purple-200"
+                onClick={handleRefresh}
+                disabled={refreshing}
               >
-                <Activity className="h-6 w-6" />
+                <RefreshCw className={`h-6 w-6 text-purple-600 ${refreshing ? 'animate-spin' : ''}`} />
                 <span>Refresh Data</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col items-center justify-center space-y-2 hover:bg-orange-50 hover:border-orange-200"
+                onClick={() => {
+                  // Export basic dashboard data as CSV
+                  const csvContent = [
+                    ['Metric', 'Value'],
+                    ['Total Users', totalUsers.toString()],
+                    ['New Users Today', todayUsers.toString()],
+                    ['Users This Week', thisWeekUsers.toString()],
+                    ['Growth Rate', `${growthRate}%`],
+                    ['Total Chats', totalChats.toString()],
+                    ['Last Updated', lastRefresh.toISOString()]
+                  ]
+                    .map(row => row.join(','))
+                    .join('\n');
+                  
+                  const blob = new Blob([csvContent], { type: 'text/csv' });
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `dashboard-stats-${new Date().toISOString().split('T')[0]}.csv`;
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                }}
+              >
+                <BarChart3 className="h-6 w-6 text-orange-600" />
+                <span>Export Stats</span>
               </Button>
             </div>
           </CardContent>

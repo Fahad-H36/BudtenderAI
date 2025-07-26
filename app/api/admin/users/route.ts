@@ -1,9 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import supabase from '@/lib/supabaseClient';
 
-// GET /api/admin/users - Get all users
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
+// GET /api/admin/users - Get all users with admin status
 export async function GET(req: NextRequest) {
   try {
+    // Verify admin access
+    const authResult = await auth();
+    const { userId } = authResult;
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
+    const isAdmin = user.privateMetadata?.role === 'admin';
+
+    if (!isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     // Parse query parameters (for searching and filtering)
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
@@ -17,7 +37,7 @@ export async function GET(req: NextRequest) {
     }
     
     // Execute the query with ordering
-    const { data, error } = await query.order('created_at', { ascending: false });
+    const { data: supabaseUsers, error } = await query.order('created_at', { ascending: false });
     
     if (error) {
       console.error('Error fetching users:', error);
@@ -26,8 +46,38 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Enrich with Clerk data including admin status
+    const enrichedUsers = await Promise.all(
+      supabaseUsers.map(async (supabaseUser) => {
+        try {
+          const clerkUser = await client.users.getUser(supabaseUser.user_id);
+          return {
+            ...supabaseUser,
+            isAdmin: clerkUser.privateMetadata?.role === 'admin',
+            firstName: clerkUser.firstName,
+            lastName: clerkUser.lastName,
+            imageUrl: clerkUser.imageUrl,
+            lastSignInAt: clerkUser.lastSignInAt,
+            emailAddresses: clerkUser.emailAddresses
+          };
+        } catch (clerkError) {
+          // If user not found in Clerk, return with basic info
+          console.warn(`User ${supabaseUser.user_id} not found in Clerk:`, clerkError);
+          return {
+            ...supabaseUser,
+            isAdmin: false,
+            firstName: null,
+            lastName: null,
+            imageUrl: null,
+            lastSignInAt: null,
+            emailAddresses: []
+          };
+        }
+      })
+    );
     
-    return NextResponse.json(data);
+    return NextResponse.json(enrichedUsers);
   } catch (error) {
     console.error('Unexpected error:', error);
     return NextResponse.json(

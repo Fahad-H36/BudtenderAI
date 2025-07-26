@@ -13,33 +13,31 @@ const isPublicRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
-  // Get authentication status
-  const authObj = await auth();
-  const userId = authObj.userId;
-  const path = req.nextUrl.pathname;
-  
   // For public routes, don't require authentication
   if (isPublicRoute(req)) {
     return NextResponse.next();
   }
   
-  // Protect all other routes
-  await auth.protect();
-
+  // Protect admin routes only
   const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
-    
+  
   if (isAdminRoute) {
-    // Fetch user data to check role
-    const client = await clerkClient()
-    // Check if user has admin role (using Clerk metadata)
+    await auth.protect();
+    
+    const client = await clerkClient();
+    const { userId } = await auth();
     const user = await client.users.getUser(userId!);
+    
+    // Check if user has admin role
     const isAdmin = user.privateMetadata.role === "admin";
     
     if (!isAdmin) {
-      // Redirect non-admin users trying to access admin routes
       const homeUrl = new URL("/dashboard", req.url);
       return NextResponse.redirect(homeUrl);
     }
+  } else {
+    // For non-admin protected routes, just ensure authentication
+    await auth.protect();
   }
   
   return NextResponse.next();
